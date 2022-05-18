@@ -53,7 +53,7 @@ var server = app.listen(5000, function () {
     console.log("Server is running on port " + port);
   });
 
-
+/*
 var con = mysql.createConnection({
 host: 'localhost',
 user: 'root',
@@ -74,7 +74,7 @@ con.connect(function(err) {
         if (err) throw err;
         console.log(result);
       });
-  });
+  });*/
 
 
 
