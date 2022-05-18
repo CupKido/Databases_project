@@ -3,7 +3,7 @@ var bodyParser = require("body-parser");
 var mysql = require('mysql')
 
 const app = express()
-
+const port = 5000
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set("view engine", "html");
@@ -11,6 +11,7 @@ app.set("view engine", "html");
 app.engine("html", require("ejs").renderFile);
 
 app.get("/", function (req, res) {
+    console.log("Connected!");
   /*   var sql = require("mssql");
 
     // config for your database
@@ -43,8 +44,15 @@ app.get("/", function (req, res) {
 app.post("/", (req, res) => {
     res.send("Hello World");
 });*/
-  res.render("mainpage.html");
+
+    res.sendFile(__dirname + "/views/mainpage.html");
+  //res.render("mainpage.html");
 });
+
+var server = app.listen(5000, function () {
+    console.log("Server is running on port " + port);
+  });
+
 
 var con = mysql.createConnection({
 host: 'localhost',
