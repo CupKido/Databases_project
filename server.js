@@ -1,14 +1,22 @@
 const express = require('express')
 var bodyParser = require("body-parser");
-var mysql = require('mysql')
+var mysql = require('mysql');
+const res = require('express/lib/response');
 
 const app = express()
-const port = 5000
+const port = 80
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set("view engine", "html");
 
 app.engine("html", require("ejs").renderFile);
+
+var con = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'saartaler',
+  database: 'army'
+})
 
 app.get("/", function (req, res) {
     console.log("Connected!");
@@ -44,15 +52,70 @@ app.get("/", function (req, res) {
 app.post("/", (req, res) => {
     res.send("Hello World");
 });*/
-
-    res.sendFile(__dirname + "/views/mainpage.html");
+    res.render("mainpage.html")
+    //res.sendFile(__dirname + "/views/mainpage.html");
   //res.render("mainpage.html");
 });
 
-var server = app.listen(5000, function () {
+var server = app.listen(80, function () {
     console.log("Server is running on port " + port);
   });
 
+app.post("/fill", function (req, res) {
+    console.log("stuff received")
+    const keys = Object.keys(req.body);
+    for (key of keys) {      
+        console.log(key);
+    }
+    people = "";
+    if( con.state === "disconnected" ){
+      con.connect(function(err) {
+        if (err) throw err;
+      });
+    }
+      console.log("Connected!");
+      var querya = con.query("select * from soldier s where s.SoldierNum =" + req.body["ID"] , function (err, result, fields) {
+          if (err) throw err;
+          a = [];
+          for(f in fields) {
+            a.push(fields[f]["name"]);
+          }
+          
+          console.log(a);
+          return res.render("secondpage.html",{result: result, fields: a, tryy: fields});
+          for (resa in result) {
+            console.log(result[resa]["Name"]);
+            people = people + result[resa]["Name"] + "\n";
+          }
+          return res.render("secondpage.html", {result: people, name: "helooooooo"});
+        });
+        
+    
+});
+
+app.post("/giveq", function(req, res) {
+  if( con.state === "disconnected" ){
+    con.connect(function(err) {
+      if (err) throw err;
+    });
+  }
+  console.log("Connected!");
+      var querya = con.query(req.body["query"] , function (err, result, fields) {
+          if (err) throw err;
+          a = [];
+          for(f in fields) {
+            a.push(fields[f]["name"]);
+          }
+          
+          console.log(a);
+          return res.render("secondpage.html",{result: result, fields: a});
+        });
+
+});
+
+app.post("/goback", function (req, res) {
+  res.render("mainpage.html")
+})
 /*
 var con = mysql.createConnection({
 host: 'localhost',

@@ -11,9 +11,15 @@
 <body>
     <h1>hello world!</h1>
     
-    <form action="/">
+    <form action="/fill" method="post">
         <label for="ID">ID</label>
         <input type="number" id="ID" name ="ID"><br><br>
+        <input type="submit" value ="Submit">
+    </form>
+
+    <form action="/giveq" method="post">
+        <label for="ID">query</label>
+        <input type="text" id="query" name ="query"><br><br>
         <input type="submit" value ="Submit">
     </form>
 </body>
