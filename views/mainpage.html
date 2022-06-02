@@ -9,19 +9,114 @@
 </head>
 
 <body>
-    <h1>hello world!</h1>
-    
+    <h2>please choose one of the options:</h2>
     <form action="/fill" method="post">
-        <label for="ID">ID</label>
+        <label for="ID">Soldier Number: </label>
         <input type="number" id="ID" name ="ID"><br><br>
         <input type="submit" value ="Submit">
     </form>
-
+    <br><br><br>
     <form action="/giveq" method="post">
-        <label for="ID">query</label>
+        <label for="ID">enter a query: </label>
         <input type="text" id="query" name ="query"><br><br>
         <input type="submit" value ="Submit">
     </form>
+
+    <br><br><br>
+
+    <button onclick="ToggleTablesQueries()"> Tables queries</button>
+    <div id="TablesQueriesDiv" style="display:none">
+        <form method="get" action="/CustomQuery/Soldiers" class="inline">
+            <button type="submit" class="link-button">
+            get soldiers query
+            </button>
+        </form>
+        <form method="get" action="/CustomQuery/Vehicles" class="inline">
+            <button type="submit" class="link-button">
+            get vehicles query
+            </button>
+        </form>
+        <form method="get" action="/CustomQuery/Bases" class="inline">
+            <button type="submit" class="link-button">
+            get military bases query
+            </button>
+        </form>
+        <form method="get" action="/CustomQuery/Operations" class="inline">
+            <button type="submit" class="link-button">
+            get operations query
+            </button>
+        </form>
+
+        <form method="get" action="/CustomQuery/Weapons" class="inline">
+            <button type="submit" class="link-button">
+            get weapons query
+            </button>
+        </form>
+
+    </div>
+
+    <br>
+
+    <button onclick="TogglePremadeQueries()"> Try premade queries</button>
+    <div id="PremadeQueriesDiv" style="display:none">
+        <form method="get" action="/CustomQuery/GazaLebanon" class="inline">
+            <button type="submit" class="link-button">
+            get gaza/lebanon query
+            </button>
+        </form>
+        <form method="get" action="/CustomQuery/OpCount" class="inline">
+            <button type="submit" class="link-button">
+            get operation count query
+            </button>
+        </form>
+    </div>
+
+
+    <style>
+        .myDIV{
+            width:0%;
+        }
+        .mystyle {
+            width: 100%;
+            padding: 25px;
+            background-color: coral;
+            color: white;
+            font-size: 25px;
+          }
+          .link-button{
+              background: none;
+              border: none;
+              color: blue;
+              cursor: pointer;
+              transition:ease-in-out;
+          }
+          .link-button:hover{
+              color:cornflowerblue;
+              text-decoration: underline;
+          }
+    </style>
+
+
+    <script>
+        function TogglePremadeQueries() {
+        var x = document.getElementById("PremadeQueriesDiv");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+        }
+        function ToggleTablesQueries() {
+        var x = document.getElementById("TablesQueriesDiv");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+        }
+    </script>
+
+      
 </body>
 
 </html>

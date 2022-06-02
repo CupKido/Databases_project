@@ -7,13 +7,12 @@
     <title>table</title>
 </head>
 <body>
-    <h1>hello world!</h1>
-    <table>
+    <h2><%= title %> </h2>
+    <table border="1" cellspacing="3">
         <thead>
-            
           <tr>
-            <%for(var i = 0; i < fields.length; i++){ %>
-            <th> <% fields[i] %> </th>
+            <%for(var i = 0; i < fields.length; i++) { %>
+                <th> <%= fields[i] %> </th>
             <% } %> 
           </tr>
         </thead>
