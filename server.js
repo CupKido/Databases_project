@@ -39,22 +39,32 @@ app.get("/CustomQuery/:id" , function (req, res) {
   current_query = ""
   switch (id) {
     case "Soldiers":
-      title = "All soldiers";
+      title = "All soldiers:";
       current_query = "select * from soldier s ORDER BY s.SoldierNum";
       break;
     case "Vehicles":
-      title = "All vehicles";
+      title = "All vehicles:";
       current_query = "select * from vehicle";
       break;
     case "Bases":
-      title = "All military bases";
+      title = "All military bases:";
       current_query = "select * from military_base";
       break;
     case "Operations":
+      title = "All operations:";
       current_query = "select * from soldier_in_op";
       break;
     case "Weapons":
+      title = "All weapons:";
       current_query = "select * from weapon"
+      break;
+    case "Riffles":
+      title = "All Riffles:";
+      current_query = "select * from Rifle"
+      break;
+    case "Artillery":
+      title = "All Artillery:";
+      current_query = "select * from artillery"
       break;
     case "GazaLebanon":
       title = "Soldier participated in Gaza or Lebanon operations";
@@ -78,6 +88,14 @@ app.get("/CustomQuery/:id" , function (req, res) {
       group by s.SoldierNum, s.Name\
       order by SoldierNum"
       break;
+    case "AvailableVehicles":
+      title = "Available vehicles in each bases"
+      current_query = 
+      "select  v.Base_ID, count(v.Vehicle_number)\
+      from vehicle v\
+      where v.InUse = 0\
+      group by v.Base_ID";
+      break;
     default:
         return res.render("404page.html");
   }
@@ -95,7 +113,7 @@ app.get("/CustomQuery/:id" , function (req, res) {
     for (f in fields) {
       a.push(fields[f]["name"]);
     }
-
+    
     console.log(a);
     return res.render("secondpage.html", { result: result, fields: a, title: title });
   });
