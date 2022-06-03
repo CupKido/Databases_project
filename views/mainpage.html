@@ -5,24 +5,28 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="shortcut icon" type="image/png" href="favicon.png" />
+    <title>Army DB site</title>
 </head>
 
 <body>
+    <div class="content">
+
+    
     <h2>please choose one of the options:</h2>
     <form action="/fill" method="post">
         <label for="ID">Soldier Number: </label>
         <input type="number" id="ID" name ="ID"><br><br>
         <input type="submit" value ="Submit">
     </form>
-    <br><br><br>
+    <br><hr><br>
     <form action="/giveq" method="post">
         <label for="ID">enter a query: </label>
         <input type="text" id="query" name ="query"><br><br>
         <input type="submit" value ="Submit">
     </form>
 
-    <br><br><br>
+    <br><hr><br>
 
     <button onclick="ToggleTablesQueries()"> Tables queries</button>
     <div id="TablesQueriesDiv" style="display:none">
@@ -66,8 +70,8 @@
         </form>
 
     </div>
-
     <br>
+    <br><hr><br>
 
     <button onclick="TogglePremadeQueries()"> Try premade queries</button>
     <div id="PremadeQueriesDiv" style="display:none">
@@ -87,9 +91,21 @@
             get available vehicles per base query
             </button>
         </form>
+
+        <form method="get" action="/CustomQuery/ArtilleryRangeAndCountPerDistrict" class="inline">
+            <button type="submit" class="link-button">
+            get Artillery Range And Count Per District query
+            </button>
+        </form>
+        
+        <form method="get" action="/CustomQuery/WeaponriesStatus" class="inline">
+            <button type="submit" class="link-button">
+            get all weaponries and their capacity VS actual capacity query
+            </button>
+        </form>
     </div>
 
-
+</div>
     <style>
         .myDIV{
             width:0%;
@@ -111,6 +127,10 @@
           .link-button:hover{
               color:cornflowerblue;
               text-decoration: underline;
+          }
+          .content {
+              max-width: 500px;
+              margin: auto;
           }
     </style>
 

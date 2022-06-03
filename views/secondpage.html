@@ -7,6 +7,8 @@
     <title>table</title>
 </head>
 <body>
+
+  <div class="content">
     <h2><%= title %> </h2>
     <table border="1" cellspacing="3">
         <thead>
@@ -21,7 +23,13 @@
           <% for(var i=0; i < result.length; i++) { %>
           <tr>
             <%for(var j = 0; j < fields.length; j++) { %>
-            <td><%= result[i][fields[j]] %></td>
+            <td>
+              <% if(result[i][fields[j]] != null) { %>
+              <%= result[i][fields[j]] %>
+              <% }else{ %>
+                <%= "none" %>
+                <% } %> 
+            </td>
                 <% } %> 
           </tr>
           <% } %>
@@ -30,7 +38,14 @@
     <form method="post" action="/goback">
         <input type="submit" value ="Go Back">
     </form>
-    
+  </div>
 </body>
+
+  <style>
+    .content {
+      max-width: 960px;
+      margin: auto;
+    }
+  </style>
 
 </html>
