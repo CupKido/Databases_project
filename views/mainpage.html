@@ -14,7 +14,7 @@
 
     
     <h2>please choose one of the options:</h2>
-    <form action="/fill" method="post">
+    <form action="/Soldier" method="post">
         <label for="ID">Soldier Number: </label>
         <input type="number" id="ID" name ="ID"><br><br>
         <input type="submit" value ="Submit">
@@ -26,6 +26,14 @@
         <input type="submit" value ="Submit">
     </form>
 
+    <br><hr>
+
+    <h3>Using a procedure:</h3>
+    <form action="/proc" method="post">
+        <label for="ID">enter soldier ID: </label>
+        <input type="number" id="ID" name ="ID"><br><br>
+        <input type="submit" value ="Submit">
+    </form>
     <br><hr><br>
 
     <button onclick="ToggleTablesQueries()"> Tables queries</button>
@@ -103,6 +111,7 @@
             get all weaponries and their capacity VS actual capacity query
             </button>
         </form>
+
     </div>
 
 </div>

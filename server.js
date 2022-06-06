@@ -38,6 +38,22 @@ app.get("/giveq", function (req, res) {
   res.render("404page.html");
 });
 
+app.get("/tables", function (req, res) {
+
+  if (con.state === "disconnected") {
+    con.connect(function (err) {
+      if (err) throw err;
+    });
+  }
+  console.log("Connected!");
+  con.query(`select table_name from information_schema.tables where table_schema = 'army'`, function(err, tables){ 
+    //console.log(tables);
+    for(tb in tables){
+      console.log(tables[tb]["TABLE_NAME"]);
+    }
+  });
+});
+
 app.get("/CustomQuery/:id" , function (req, res) {
   var id = req.params.id;
   console.log(id)
@@ -57,10 +73,10 @@ app.get("/CustomQuery/:id" , function (req, res) {
     });
   }
   console.log("Connected!");
+
   var querya = con.query(current_query, function (err, result, fields) {
     if (err) res.render("404page.html");
     a = [];
-
     for (f in fields) {
       a.push(fields[f]["name"]);
     }
@@ -72,7 +88,7 @@ app.get("/CustomQuery/:id" , function (req, res) {
 
 
 
-app.post("/fill", function (req, res) {
+app.post("/Soldier", function (req, res) {
   console.log("stuff received")
   const keys = Object.keys(req.body);
   for (key of keys) {
@@ -87,7 +103,8 @@ app.post("/fill", function (req, res) {
   console.log("Connected!");
   var querya = con.query("select * from soldier s \
   where s.SoldierNum =" + req.body["ID"], function (err, result, fields) {
-    if (err) throw err;
+    if (err) return res.render("404page.html");
+    if(result.length == 0) res.render("404page.html");
     a = [];
     for (f in fields) {
       a.push(fields[f]["name"]);
@@ -100,6 +117,7 @@ app.post("/fill", function (req, res) {
 
 });
 
+
 app.post("/giveq", function (req, res) {
   if (con.state === "disconnected") {
     con.connect(function (err) {
@@ -108,7 +126,7 @@ app.post("/giveq", function (req, res) {
   }
   console.log("Connected!");
   var querya = con.query(req.body["query"], function (err, result, fields) {
-    if (err) res.render("404page.html");
+    if (err) return res.render("404page.html");
     a = [];
     for (f in fields) {
       a.push(fields[f]["name"]);
@@ -118,6 +136,32 @@ app.post("/giveq", function (req, res) {
     return res.render("secondpage.html", { result: result, fields: a, title: "Custom query:" });
   });
 
+});
+
+
+app.post("/proc", function (req, res) {
+  var IDparam = req.body["ID"];
+  let a = "CALL vehicles_for_soldier(?)"
+  if (con.state === "disconnected") {
+    con.connect(function (err) {
+      if (err) throw err;
+    });
+  }
+  console.log("Connected!");
+  var querya = con.query(a, IDparam, function (err, result, fields) {
+    if (err) res.render("404page.html");
+    console.log(result);
+    console.log(fields);
+    fields = fields[0];
+    result = result[0];
+    a = [];
+    for (f in fields) {
+      a.push(fields[f]["name"]);
+    }
+    title = "proc try:"
+    console.log(a);
+    return res.render("secondpage.html", { result: result, fields: a, title: title });
+  });
 });
 
 app.post("/goback", function (req, res) {
