@@ -48,9 +48,11 @@ app.get("/tables", function (req, res) {
   console.log("Connected!");
   con.query(`select table_name from information_schema.tables where table_schema = 'army'`, function(err, tables){ 
     //console.log(tables);
+    a = ""
     for(tb in tables){
-      console.log(tables[tb]["TABLE_NAME"]);
+      a = a + tables[tb]["TABLE_NAME"] + "\n     \n";
     }
+    res.send(a);
   });
 });
 
@@ -60,7 +62,7 @@ app.get("/CustomQuery/:id" , function (req, res) {
   title = ""
   current_query = ""
   
-  var data = {current_query: "", title: ""}
+  var data = {current_query: "", title: "", changable: false}
   if( !QueryFactory(id, data)){
     return res.render("404page.html");
   }
@@ -82,7 +84,7 @@ app.get("/CustomQuery/:id" , function (req, res) {
     }
     
     console.log(a);
-    return res.render("secondpage.html", { result: result, fields: a, title: title });
+    return res.render("secondpage.html", { result: result, fields: a, title: data.title, changable: data.changable });
   });
 });
 
@@ -111,7 +113,7 @@ app.post("/Soldier", function (req, res) {
     }
 
     console.log(a);
-    return res.render("secondpage.html", { result: result, fields: a, title: ("Soldier Number " + req.body["ID"] + ":") });
+    return res.render("secondpage.html", { result: result, fields: a, title: ("Soldier Number " + req.body["ID"] + ":"), changable: false});
   });
 
 
@@ -133,7 +135,7 @@ app.post("/giveq", function (req, res) {
     }
 
     console.log(a);
-    return res.render("secondpage.html", { result: result, fields: a, title: "Custom query:" });
+    return res.render("secondpage.html", { result: result, fields: a, title: "Custom query:", changable: false });
   });
 
 });
@@ -160,7 +162,7 @@ app.post("/proc", function (req, res) {
     }
     title = "proc try:"
     console.log(a);
-    return res.render("secondpage.html", { result: result, fields: a, title: title });
+    return res.render("secondpage.html", { result: result, fields: a, title: title, changable: false });
   });
 });
 
@@ -173,30 +175,37 @@ function QueryFactory(resoure, data) {
     case "Soldiers":
       data.title = "All soldiers:";
       data.current_query = "select * from soldier s ORDER BY s.SoldierNum";
+      data.changable = true;
       break;
     case "Vehicles":
       data.title = "All vehicles:";
       data.current_query = "select * from vehicle";
+      data.changable = true;
       break;
     case "Bases":
       data.title = "All military bases:";
       data.current_query = "select * from military_base";
+      data.changable = true;
       break;
     case "Operations":
       data.title = "All operations:";
       data.current_query = "select * from soldier_in_op";
+      data.changable = true;
       break;
     case "Weapons":
       data.title = "All weapons:";
       data.current_query = "select * from weapon"
+      data.changable = true;
       break;
     case "Riffles":
       data.title = "All Riffles:";
       data.current_query = "select * from Rifle"
+      data.changable = true;
       break;
     case "Artillery":
       data.title = "All Artillery:";
       data.current_query = "select * from artillery"
+      data.changable = true;
       break;
     case "GazaLebanon":
       data.title = "Soldier participated in Gaza or Lebanon operations:";
