@@ -3,16 +3,18 @@ var bodyParser = require("body-parser");
 var path = require('path')
 var mysql = require('mysql');
 const res = require('express/lib/response');
+const favicon = require('serve-favicon')
 
 const app = express()
-const port = 80
+const port = 3333
 GeneralFields = [];
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true })); 
 
 app.set("view engine", "html");
 
 app.engine("html", require("ejs").renderFile);
-
+app.use(express.static('public')); 
+    
 
 var con = mysql.createConnection({
   host: 'localhost',
@@ -21,13 +23,10 @@ var con = mysql.createConnection({
   database: 'army'
 })
 
-var server = app.listen(80, function () {
+var server = app.listen(3333, function () {
   console.log("Server is running on port " + port);
 });
 
-app.get("favicon.png", function (req, res) {
-  console.log("what");
-});
 
 app.get("/", function (req, res) {
   console.log("Connected!");
@@ -113,8 +112,9 @@ app.post("/SubmitAdd/:id", function(req, res){
 
     res.redirect("/CustomQuery/" + table);
   })
+  
 })
-
+ 
 
 app.post("/SubmitRemove/:id", function (req, res) {
   var table = req.params.id;
@@ -147,6 +147,44 @@ app.post("/SubmitRemove/:id", function (req, res) {
   })
 })
 
+app.post("/SubmitUpdate/:id", function (req, res) {
+  var table = req.params.id;
+  if (con.state === "disconnected") {
+    con.connect(function (err) {
+      if (err) throw err;
+    });
+  }
+
+  query = "UPDATE " + table + " t SET "
+  NewChanged = false;
+  for(field in GeneralFields){
+    if(req.body["New " + GeneralFields[field]] != ""){
+    query += "t." + modifyField(GeneralFields[field]) + " = \'" + req.body["New " + GeneralFields[field]] + "\', ";
+    NewChanged = true;
+    }
+  }
+  if(!NewChanged){ return res.redirect("/404page"); }
+  query = query.slice(0, -2) + " WHERE ";
+
+  for(field in GeneralFields){
+    if(req.body["Existing " + GeneralFields[field]] != ""){
+    query += "t." + modifyField(GeneralFields[field]) + " = \'" + req.body["Existing " + GeneralFields[field]] + "\', ";
+    NewChanged = true;
+    }
+  }
+  query = query.slice(0, -2);
+
+  var querya = con.query(query, function (err, result) {
+    if (err) 
+    {
+    res.render("404page.html");
+    throw err;
+   }
+
+    res.redirect("/CustomQuery/" + table);
+  })
+
+})
 
 app.get("/CustomQuery/:id" , function (req, res) {
   var id = req.params.id;
@@ -205,7 +243,7 @@ app.post("/Soldier", function (req, res) {
     }
 
     console.log(a);
-    return res.render("secondpage.html", { result: result, fields: a, title: ("Soldier Number " + req.body["ID"] + ":"), changable: false});
+    return res.render("secondpage.html", { result: result, fields: a, title: ("Soldier Number " + req.body["ID"] + ":"), changable: false, table: "Soldier " + req.body["ID"]});
   });
 
 
@@ -235,6 +273,7 @@ app.post("/giveq", function (req, res) {
 
 app.post("/proc", function (req, res) {
   var IDparam = req.body["ID"];
+  if(IDparam == "") { return res.redirect("/404page"); }
   let a = "CALL vehicles_for_soldier(?)"
   if (con.state === "disconnected") {
     con.connect(function (err) {
@@ -254,12 +293,16 @@ app.post("/proc", function (req, res) {
     }
     title = "proc try:"
     console.log(a);
-    return res.render("secondpage.html", { result: result, fields: a, title: title, changable: false });
+    return res.render("secondpage.html", { result: result, fields: a, title: title, changable: false, table: "vehicles_for_soldier"});
   });
 });
 
 app.post("/goback", function (req, res) {
   res.render("mainpage.html")
+})
+
+app.get("/404page", function (req, res) {
+  res.render("404page.html")
 })
 
 function QueryFactory(resoure, data) {
@@ -284,7 +327,7 @@ function QueryFactory(resoure, data) {
       data.current_query = "select * from soldier_in_op";
       data.changable = true;
       break;
-    case "weapons":
+    case "weapon":
       data.title = "All weapons:";
       data.current_query = "select * from weapon"
       data.changable = true;
@@ -390,28 +433,6 @@ function modifyField(field){
      return field;
  }
 }
-/*
-var con = mysql.createConnection({
-host: 'localhost',
-user: 'root',
-password: 'saartaler',
-database: 'army'
-})
-
-
-con.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected!");
-    var querya = con.query("select s.SoldierNum, s.Name, count(o.SoldierNum) as 'Op Count' from soldier s, soldier_in_op o where s.SoldierNum = o.SoldierNum group by s.SoldierNum, s.Name order by SoldierNum;", function (err, result, fields) {
-        if (err) throw err;
-        console.log(result);
-      });
-      
-      con.query("select distinct op.Location, op.Date, how_many_soldiers_in_op(op.Date, op.Location) from soldier_in_op op;", function (err, result, fields) {
-        if (err) throw err;
-        console.log(result);
-      });
-  });*/
 
 
 

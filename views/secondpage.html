@@ -65,6 +65,24 @@
     </form>
     </div>
 
+    <button onclick="ToggleUpdate()">Update</button>
+    <div id="UpdateDiv" style="display:none">
+      <form action="/SubmitUpdate/<%= table %> " method="post">
+        <% for(var i = 0; i < fields.length; i++) { %>
+        <label for="Existing <%= fields[i] %> ">enter existing <%= fields[i] %>: </label>
+        <input type="text" id="Existing <%= fields[i] %>" name ="Existing <%= fields[i] %>"><br><br>
+        <% } %> 
+        <hr>
+        <% for(var i = 0; i < fields.length; i++) { %>
+          <label for="New <%= fields[i] %> ">enter new <%= fields[i] %>: </label>
+          <input type="text" id="New <%= fields[i] %>" name ="New <%= fields[i] %>"><br><br>
+          <% } %> 
+        <input type="submit" value ="Submit">
+        
+    </form>
+    </div>
+
+
     <% } %> 
 
   </div>
@@ -88,6 +106,14 @@
   }
   function ToggleRemove() {
   var x = document.getElementById("RemoveDiv");
+  if (x.style.display === "none") {
+      x.style.display = "block";
+  } else {
+      x.style.display = "none";
+  }
+  }
+  function ToggleUpdate() {
+  var x = document.getElementById("UpdateDiv");
   if (x.style.display === "none") {
       x.style.display = "block";
   } else {
