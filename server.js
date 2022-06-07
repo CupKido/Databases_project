@@ -6,6 +6,7 @@ const res = require('express/lib/response');
 
 const app = express()
 const port = 80
+GeneralFields = [];
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set("view engine", "html");
@@ -38,23 +39,110 @@ app.get("/giveq", function (req, res) {
   res.render("404page.html");
 });
 
-app.get("/tables", function (req, res) {
+app.get("/AddToTable", function (req, res) {
+  if (con.state === "disconnected") {
+    con.connect(function (err) {
+      if (err) throw err;
+    });
+  }
+  array = []
+  console.log("Connected!");
+  con.query(`select table_name from information_schema.tables where table_schema = 'army'`, function(err, tables){ 
+    //console.log(tables);
+    for(tb in tables){
+      array.push(tables[tb]["TABLE_NAME"]);
 
+    }
+    res.render("selectTable.html", { tables : array })
+  });
+  
+});
+
+app.get("/AddTo/:id", function (req, res) {
+
+  var table = req.params.id;
   if (con.state === "disconnected") {
     con.connect(function (err) {
       if (err) throw err;
     });
   }
   console.log("Connected!");
-  con.query(`select table_name from information_schema.tables where table_schema = 'army'`, function(err, tables){ 
-    //console.log(tables);
-    a = ""
-    for(tb in tables){
-      a = a + tables[tb]["TABLE_NAME"] + "\n     \n";
+
+  var querya = con.query("select * from " + table, function (err, result, fields) {
+    if (err) res.render("404page.html");
+    a = [];
+    for (f in fields) {
+      a.push(fields[f]["name"]);
     }
-    res.send(a);
-  });
+    GeneralFields = a;
+    res.render("AddPage.html", {fields: a, table: table});
+  })
 });
+
+
+app.post("/SubmitAdd/:id", function(req, res){
+  var table = req.params.id;
+  if (con.state === "disconnected") {
+    con.connect(function (err) {
+      if (err) throw err;
+    });
+  }
+  
+  fields = "(";
+  vals = "(";
+  for(a in GeneralFields) {
+    fields += modifyField(GeneralFields[a]) + ", "; 
+    vals += "\'" + req.body[ GeneralFields[a]] + "\'" + ", ";
+  }
+  fields = fields.slice(0, -2) + ")";
+  vals = vals.slice(0, -2) + ")";
+  query = "INSERT INTO " + 
+  table + " " +  fields 
+  + " VALUES " + 
+  vals;
+  var querya = con.query(query, function (err, result) {
+    if (err) 
+    {
+    res.render("404page.html");
+    throw err;
+   }
+
+    res.redirect("/CustomQuery/" + table);
+  })
+})
+
+
+app.post("/SubmitRemove/:id", function (req, res) {
+  var table = req.params.id;
+  if (con.state === "disconnected") {
+    con.connect(function (err) {
+      if (err) throw err;
+    });
+  }
+
+  query = "DELETE FROM " + table + " WHERE "
+  somevalue = false;
+  for(field in GeneralFields){
+
+    if(req.body[GeneralFields[field]] != ""){
+    query += modifyField(GeneralFields[field]) + " LIKE \'" + req.body[GeneralFields[field]] + "\' AND "
+    somevalue = true;
+    }
+  }
+  if(!somevalue) { return res.redirect("/CustomQuery/" + table);}
+  query = query.slice(0, -5);
+
+  var querya = con.query(query, function (err, result) {
+    if (err) 
+    {
+    res.render("404page.html");
+    throw err;
+   }
+
+    res.redirect("/CustomQuery/" + table);
+  })
+})
+
 
 app.get("/CustomQuery/:id" , function (req, res) {
   var id = req.params.id;
@@ -82,9 +170,9 @@ app.get("/CustomQuery/:id" , function (req, res) {
     for (f in fields) {
       a.push(fields[f]["name"]);
     }
-    
+    GeneralFields = a;
     console.log(a);
-    return res.render("secondpage.html", { result: result, fields: a, title: data.title, changable: data.changable });
+    return res.render("secondpage.html", { result: result, fields: a, title: data.title, changable: data.changable, table: id });
   });
 });
 
@@ -172,39 +260,44 @@ app.post("/goback", function (req, res) {
 
 function QueryFactory(resoure, data) {
   switch (resoure) {
-    case "Soldiers":
+    case "soldier":
       data.title = "All soldiers:";
       data.current_query = "select * from soldier s ORDER BY s.SoldierNum";
       data.changable = true;
       break;
-    case "Vehicles":
+    case "vehicle":
       data.title = "All vehicles:";
       data.current_query = "select * from vehicle";
       data.changable = true;
       break;
-    case "Bases":
+    case "military_base":
       data.title = "All military bases:";
       data.current_query = "select * from military_base";
       data.changable = true;
       break;
-    case "Operations":
+    case "soldier_in_op":
       data.title = "All operations:";
       data.current_query = "select * from soldier_in_op";
       data.changable = true;
       break;
-    case "Weapons":
+    case "weapons":
       data.title = "All weapons:";
       data.current_query = "select * from weapon"
       data.changable = true;
       break;
-    case "Riffles":
-      data.title = "All Riffles:";
+    case "Rifle":
+      data.title = "All Rifle:";
       data.current_query = "select * from Rifle"
       data.changable = true;
       break;
-    case "Artillery":
+    case "artillery":
       data.title = "All Artillery:";
       data.current_query = "select * from artillery"
+      data.changable = true;
+      break;
+    case "job": 
+      data.title = "All Jobs:";
+      data.current_query = "select * from job"
       data.changable = true;
       break;
     case "GazaLebanon":
@@ -263,6 +356,35 @@ function QueryFactory(resoure, data) {
         return false;
   }
   return true;
+}
+
+function getTables(array){
+  if (con.state === "disconnected") {
+    con.connect(function (err) {
+      if (err) throw err;
+    });
+  }
+
+  console.log("Connected!");
+  con.query(`select table_name from information_schema.tables where table_schema = 'army'`, function(err, tables){ 
+    //console.log(tables);
+    for(tb in tables){
+      array.push(tables[tb]["TABLE_NAME"]);
+    }
+  });
+  
+}
+
+function modifyField(field){
+ switch(field){ 
+   case "Force":
+   case "Rank":
+   case "range":
+     return "`" + field + "`";
+     break;
+   default:
+     return field;
+ }
 }
 /*
 var con = mysql.createConnection({

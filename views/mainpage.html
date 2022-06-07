@@ -38,45 +38,50 @@
 
     <button onclick="ToggleTablesQueries()"> Tables queries</button>
     <div id="TablesQueriesDiv" style="display:none">
-        <form method="get" action="/CustomQuery/Soldiers" class="inline">
+        <form method="get" action="/CustomQuery/soldier" class="inline">
             <button type="submit" class="link-button">
             get soldiers query
             </button>
         </form>
-        <form method="get" action="/CustomQuery/Vehicles" class="inline">
+        <form method="get" action="/CustomQuery/vehicle" class="inline">
             <button type="submit" class="link-button">
             get vehicles query
             </button>
         </form>
-        <form method="get" action="/CustomQuery/Bases" class="inline">
+        <form method="get" action="/CustomQuery/military_base" class="inline">
             <button type="submit" class="link-button">
             get military bases query
             </button>
         </form>
-        <form method="get" action="/CustomQuery/Operations" class="inline">
+        <form method="get" action="/CustomQuery/soldier_in_op" class="inline">
             <button type="submit" class="link-button">
             get operations query
             </button>
         </form>
 
-        <form method="get" action="/CustomQuery/Weapons" class="inline">
+        <form method="get" action="/CustomQuery/weapons" class="inline">
             <button type="submit" class="link-button">
             get weapons query
             </button>
         </form>
 
-        <form method="get" action="/CustomQuery/Riffles" class="inline">
+        <form method="get" action="/CustomQuery/Rifle" class="inline">
             <button type="submit" class="link-button">
             get riffles query
             </button>
         </form>
 
-        <form method="get" action="/CustomQuery/Artillery" class="inline">
+        <form method="get" action="/CustomQuery/artillery" class="inline">
             <button type="submit" class="link-button">
             get artillery query
             </button>
         </form>
 
+        <form method="get" action="/CustomQuery/job" class="inline">
+            <button type="submit" class="link-button">
+            get job query
+            </button>
+        </form>
     </div>
     <br>
     <br><hr><br>
@@ -111,8 +116,13 @@
             get all weaponries and their capacity VS actual capacity query
             </button>
         </form>
-
+        
     </div>
+
+    <br><hr><br>
+    <form action="/AddToTable" method="get">
+        <input type="submit" value ="Add To Table">
+    </form>
 
 </div>
     <style>

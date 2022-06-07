@@ -41,16 +41,32 @@
 
     <% if(changable) { %> 
 
-      <form action="/delete" method="post">
-        <label for="Name">enter table name: </label>
-        <input type="text" id="TBName" name ="TBName"><br><br>
-        <label for="ID">enter ID: </label>
-        <input type="number" id="ID" name ="ID"><br><br>
-        <input type="submit" value ="Delete">
+      <button onclick="ToggleRemove()">Remove</button>
+    <div id="RemoveDiv" style="display:none">
+      <form action="/SubmitRemove/<%= table %> " method="post">
+        <% for(var i = 0; i < fields.length; i++) { %>
+        <label for="<%= fields[i] %> ">enter <%= fields[i] %>: </label>
+        <input type="text" id="<%= fields[i] %>" name ="<%= fields[i] %>"><br><br>
+        <% } %> 
+        <input type="submit" value ="Submit">
         
     </form>
-      
-      <% } %> 
+    </div>
+
+    <button onclick="ToggleAdd()"> Add</button>
+    <div id="AddDiv" style="display:none">
+      <form action="/SubmitAdd/<%= table %> " method="post">
+        <% for(var i = 0; i < fields.length; i++) { %>
+        <label for="<%= fields[i] %> ">enter <%= fields[i] %>: </label>
+        <input type="text" id="<%= fields[i] %>" name ="<%= fields[i] %>"><br><br>
+        <% } %> 
+        <input type="submit" value ="Submit">
+        
+    </form>
+    </div>
+
+    <% } %> 
+
   </div>
 </body>
 
@@ -61,4 +77,22 @@
     }
   </style>
 
+<script>
+  function ToggleAdd() {
+  var x = document.getElementById("AddDiv");
+  if (x.style.display === "none") {
+      x.style.display = "block";
+  } else {
+      x.style.display = "none";
+  }
+  }
+  function ToggleRemove() {
+  var x = document.getElementById("RemoveDiv");
+  if (x.style.display === "none") {
+      x.style.display = "block";
+  } else {
+      x.style.display = "none";
+  }
+  }
+</script>
 </html>

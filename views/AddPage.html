@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>table</title>
+</head>
+<body>
+
+  <div class="content">
+
+    <h2>please enter parameters for <%= table %> </h2>
+    <form action="/SubmitAdd/<%= table %> " method="post">
+        <% for(var i = 0; i < fields.length; i++) { %>
+        <label for="<%= fields[i] %> ">enter <%= fields[i] %>: </label>
+        <input type="text" id="<%= fields[i] %>" name ="<%= fields[i] %>"><br><br>
+        <% } %> 
+        <input type="submit" value ="Submit">
+    </form>
+    
+    
+
+    <form method="get" action="/">
+        <input type="submit" value ="Go Back">
+    </form>
+    </div>
+    <style>
+        .myDIV{
+            width:0%;
+        }
+        .mystyle {
+            width: 100%;
+            padding: 25px;
+            background-color: coral;
+           color: white;
+            font-size: 25px;
+         }
+          .link-button{
+              background: none;
+              border: none;
+              color: blue;
+             cursor: pointer;
+             transition:ease-in-out;
+             display: block
+         }
+          .link-button:hover{
+              color:cornflowerblue;
+              text-decoration: underline;
+         }
+          .content {
+              max-width: 960px;
+              margin: auto;
+          }
+    </style>
+
+
+
+
+    </body>
+
+
+</html>
