@@ -92,7 +92,11 @@ app.post("/SubmitAdd/:id", function(req, res){
   vals = "(";
   for(a in GeneralFields) {
     fields += modifyField(GeneralFields[a]) + ", "; 
-    vals += "\'" + req.body[ GeneralFields[a]] + "\'" + ", ";
+    if(req.body[ GeneralFields[a]] != ""){
+      vals += "\'" + req.body[ GeneralFields[a]] + "\'" + ", ";
+    }else{
+      vals += "null, ";
+    }
   }
   fields = fields.slice(0, -2) + ")";
   vals = vals.slice(0, -2) + ")";
