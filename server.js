@@ -3,7 +3,8 @@ var bodyParser = require("body-parser");
 var path = require('path')
 var mysql = require('mysql');
 const res = require('express/lib/response');
-const favicon = require('serve-favicon')
+const favicon = require('serve-favicon');
+const { Console } = require('console');
 
 const app = express()
 const port = 3333
@@ -107,7 +108,8 @@ app.post("/SubmitAdd/:id", function(req, res){
     if (err) 
     {
     res.render("404page.html");
-    throw err;
+    console.log(err);
+    return;
    }
 
     res.redirect("/CustomQuery/" + table);
@@ -140,7 +142,8 @@ app.post("/SubmitRemove/:id", function (req, res) {
     if (err) 
     {
     res.render("404page.html");
-    throw err;
+    console.log(err);
+    return;
    }
 
     res.redirect("/CustomQuery/" + table);
@@ -178,7 +181,8 @@ app.post("/SubmitUpdate/:id", function (req, res) {
     if (err) 
     {
     res.render("404page.html");
-    throw err;
+    console.log(err);
+    return;
    }
 
     res.redirect("/CustomQuery/" + table);
@@ -207,7 +211,10 @@ app.get("/CustomQuery/:id" , function (req, res) {
   console.log("Connected!");
 
   var querya = con.query(current_query, function (err, result, fields) {
-    if (err) res.render("404page.html");
+    if (err) { res.render("404page.html")
+    console.log(err) 
+    return; }
+    
     a = [];
     for (f in fields) {
       a.push(fields[f]["name"]);
@@ -265,23 +272,26 @@ app.post("/giveq", function (req, res) {
     }
 
     console.log(a);
-    return res.render("secondpage.html", { result: result, fields: a, title: "Custom query:", changable: false });
+    return res.render("secondpage.html", { result: result, fields: a, title: "Custom query:", changable: false, table: "Custom query" });
   });
 
 });
 
 
-app.post("/proc", function (req, res) {
+app.post("/Procs/:id", function (req, res) {
   var IDparam = req.body["ID"];
+  var type = req.params.id;
+
   if(IDparam == "") { return res.redirect("/404page"); }
-  let a = "CALL vehicles_for_soldier(?)"
+  var data = {current_proc: "", title: "", changable: false}
+  if(!ProcFactory(type, data)) { return res.redirect("/404page"); }
   if (con.state === "disconnected") {
     con.connect(function (err) {
       if (err) throw err;
     });
   }
   console.log("Connected!");
-  var querya = con.query(a, IDparam, function (err, result, fields) {
+  var querya = con.query(data.current_proc, IDparam, function (err, result, fields) {
     if (err) res.render("404page.html");
     console.log(result);
     console.log(fields);
@@ -291,9 +301,8 @@ app.post("/proc", function (req, res) {
     for (f in fields) {
       a.push(fields[f]["name"]);
     }
-    title = "proc try:"
     console.log(a);
-    return res.render("secondpage.html", { result: result, fields: a, title: title, changable: false, table: "vehicles_for_soldier"});
+    return res.render("secondpage.html", { result: result, fields: a, title: data.title, changable: data.changable, table: data.title});
   });
 });
 
@@ -304,6 +313,27 @@ app.post("/goback", function (req, res) {
 app.get("/404page", function (req, res) {
   res.render("404page.html")
 })
+
+function ProcFactory(resource, data) {
+  switch (resource){
+    case "SoldierVehicleProc":
+      data.title = "Vehicles for soldiers:";
+      data.current_proc = "CALL vehicles_for_soldier(?)";
+      break;
+    case "SoldierRifleProc":
+      data.title = "rifles for soldiers:";
+      data.current_proc = "CALL rifle_for_soldier(?)"
+      break;
+    case "RiflesInOpsProc":
+      data.title = "rifles in operations:";
+      data.current_proc = "CALL rifles_in_operation(?)"
+      break;
+    default:
+      return false;
+  }
+  return true;
+
+}
 
 function QueryFactory(resoure, data) {
   switch (resoure) {
@@ -330,6 +360,11 @@ function QueryFactory(resoure, data) {
     case "weapon":
       data.title = "All weapons:";
       data.current_query = "select * from weapon"
+      data.changable = true;
+      break;
+    case "weaponry":
+      data.title = "All weaponries:"
+      data.current_query = "select * from weaponry"
       data.changable = true;
       break;
     case "Rifle":
@@ -398,6 +433,35 @@ function QueryFactory(resoure, data) {
       FROM weaponry w where w.ID not in (\
       select r.weaponryID FROM rifle r\
       ORDER BY w.Base_ID, w.id)"
+      break;
+    case "ArtilleryForce":
+      data.title = "Artillery Force";
+      data.current_query = 
+      "select soldier.Force, count(*) as artilleryNum\
+      from artillery\
+      inner join soldier\
+      ON artillery.commanderID = soldier.ID\
+      group by soldier.Force"
+      break;
+    case "CommanderWithRifles":
+      data.title = "Commander with rifle"
+      data.current_query = 
+      "select commanderID, MW.rifleNum\
+      from weaponry, (Select MAX(rifleNum) as rifleNum, R.weaponryID\
+                      from (SELECT Count(weaponryID) as rifleNum, weaponryID\
+                              from rifle\
+                              GROUP BY weaponryID) as R) as MW\
+      where weaponry.commanderID = MW.weaponryID"
+      break;
+    case "RiflesInGaza":
+      data.title = "Riffles in gaza";
+      data.current_query = 
+      "select *\
+      from rifle\
+      where rifle.ID IN(select soldier.Riffle_ID\
+                          from soldier\
+                          INNER JOIN soldier_in_op\
+                          ON soldier.SoldierNum = soldier_in_op.SoldierNum AND soldier_in_op.Location = 'Gaza')"
       break;
     default:
         return false;

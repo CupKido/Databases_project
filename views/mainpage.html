@@ -29,14 +29,27 @@
     <br><hr>
 
     <h3>Using a procedure:</h3>
-    <form action="/proc" method="post">
-        <label for="ID">enter soldier ID: </label>
+    <h4>availible vehicles for a soldier:</h4>
+    <form action="/Procs/SoldierVehicleProc" method="post">
+        <label for="ID">enter soldier Number: </label>
         <input type="number" id="ID" name ="ID"><br><br>
+        <input type="submit" value ="Submit">
+    </form>
+    <h4>availible rifles for a soldier:</h4>
+    <form action="/Procs/SoldierRifleProc" method="post">
+        <label for="ID">enter soldier Number: </label>
+        <input type="number" id="ID" name ="ID"><br><br>
+        <input type="submit" value ="Submit">
+    </form>
+    <h4>rifles used in operations:</h4>
+    <form action="/Procs/RiflesInOpsProc" method="post">
+        <label for="ID">enter operation location: </label>
+        <input type="text" id="ID" name ="ID"><br><br>
         <input type="submit" value ="Submit">
     </form>
     <br><hr><br>
 
-    <button onclick="ToggleTablesQueries()"> Tables queries</button>
+    <button onclick="ToggleTablesQueries()"> Table queries</button>
     <div id="TablesQueriesDiv" style="display:none">
         <form method="get" action="/CustomQuery/soldier" class="inline">
             <button type="submit" class="link-button">
@@ -82,6 +95,14 @@
             get job query
             </button>
         </form>
+
+        <form method="get" action="/CustomQuery/weaponry" class="inline">
+            <button type="submit" class="link-button">
+            get weaponry query
+            </button>
+        </form>
+
+        
     </div>
     <br>
     <br><hr><br>
@@ -117,6 +138,24 @@
             </button>
         </form>
         
+        <form method="get" action="/CustomQuery/ArtilleryForce" class="inline">
+            <button type="submit" class="link-button">
+            get Artillery Force query
+            </button>
+        </form>
+
+        <form method="get" action="/CustomQuery/CommanderWithRifles" class="inline">
+            <button type="submit" class="link-button">
+            get Commander With Rifles query
+            </button>
+        </form>
+
+        <form method="get" action="/CustomQuery/RiflesInGaza" class="inline">
+            <button type="submit" class="link-button">
+            get Rifles In Gaza query
+            </button>
+        </form>
+
     </div>
     <br>
     <br><hr><br>
